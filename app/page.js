@@ -6,6 +6,7 @@ export default function Home() {
   const [engine, setEngine] = useState('google')
   const [isFocused, setIsFocused] = useState(false)
   const [time, setTime] = useState(new Date())
+  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000)
@@ -31,12 +32,32 @@ export default function Home() {
     return date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' })
   }
 
+  const theme = isDark ? darkTheme : lightTheme
+
   return (
-    <div style={styles.container}>
+    <div style={{...styles.container, background: theme.background}}>
+      {/* 主题切换按钮 */}
+      <button 
+        onClick={() => setIsDark(!isDark)} 
+        style={styles.themeToggle}
+        title={isDark ? '切换日间模式' : '切换夜间模式'}
+      >
+        {isDark ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        )}
+      </button>
+
       {/* 时间显示 */}
       <div style={styles.timeContainer}>
-        <div style={styles.time}>{formatTime(time)}</div>
-        <div style={styles.date}>{formatDate(time)}</div>
+        <div style={{...styles.time, color: theme.timeColor}}>{formatTime(time)}</div>
+        <div style={{...styles.date, color: theme.dateColor}}>{formatDate(time)}</div>
       </div>
 
       {/* 搜索引擎 Logo 切换 */}
@@ -47,7 +68,7 @@ export default function Home() {
             ...styles.logoBtn,
             opacity: engine === 'google' ? 1 : 0.4,
             transform: engine === 'google' ? 'scale(1.1)' : 'scale(1)',
-            background: engine === 'google' ? 'rgba(255,255,255,0.1)' : 'transparent'
+            background: engine === 'google' ? theme.logoBtnActive : 'transparent'
           }}
         >
           <svg height="28" viewBox="0 0 24 24">
@@ -63,7 +84,7 @@ export default function Home() {
             ...styles.logoBtn,
             opacity: engine === 'bing' ? 1 : 0.4,
             transform: engine === 'bing' ? 'scale(1.1)' : 'scale(1)',
-            background: engine === 'bing' ? 'rgba(255,255,255,0.1)' : 'transparent'
+            background: engine === 'bing' ? theme.logoBtnActive : 'transparent'
           }}
         >
           <svg height="28" viewBox="0 0 24 24">
@@ -77,19 +98,15 @@ export default function Home() {
       <form onSubmit={handleSearch} style={{
         ...styles.searchBox,
         width: isFocused ? '720px' : '560px',
-        background: isFocused 
-          ? 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)' 
-          : 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(248,250,252,0.7) 100%)',
-        boxShadow: isFocused 
-          ? '0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.2), inset 0 1px 0 rgba(255,255,255,0.8)' 
-          : '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5)',
+        background: isFocused ? theme.searchBoxFocused : theme.searchBox,
+        boxShadow: isFocused ? theme.searchBoxShadowFocused : theme.searchBoxShadow,
         transform: isFocused ? 'translateY(-2px)' : 'translateY(0)'
       }}>
         <div style={{
           ...styles.searchIconLeft,
           opacity: isFocused ? 0.6 : 0.4
         }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={theme.iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35"/>
           </svg>
@@ -102,11 +119,11 @@ export default function Home() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="搜索网页..."
-          style={styles.input}
+          style={{...styles.input, color: theme.inputColor}}
           autoFocus
         />
         
-        <div style={styles.divider}></div>
+        <div style={{...styles.divider, background: theme.dividerColor}}></div>
         
         <button type="submit" style={{
           ...styles.searchBtn,
@@ -120,11 +137,11 @@ export default function Home() {
         </button>
       </form>
 
-      <p style={styles.hint}>按 Enter 使用 {engine === 'google' ? 'Google' : 'Bing'} 搜索</p>
+      <p style={{...styles.hint, color: theme.hintColor}}>按 Enter 使用 {engine === 'google' ? 'Google' : 'Bing'} 搜索</p>
 
       <style jsx global>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::placeholder { color: #aaa; font-weight: 300; }
+        ::placeholder { color: ${theme.placeholderColor}; font-weight: 300; }
         input:focus::placeholder { opacity: 0.5; }
       `}</style>
     </div>
@@ -132,15 +149,63 @@ export default function Home() {
 }
 
 
+const darkTheme = {
+  background: 'linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 50%, #1a1a2e 100%)',
+  timeColor: '#fff',
+  dateColor: 'rgba(255,255,255,0.6)',
+  logoBtnActive: 'rgba(255,255,255,0.1)',
+  searchBox: 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(248,250,252,0.7) 100%)',
+  searchBoxFocused: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
+  searchBoxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5)',
+  searchBoxShadowFocused: '0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.2), inset 0 1px 0 rgba(255,255,255,0.8)',
+  iconColor: '#666',
+  inputColor: '#333',
+  dividerColor: 'rgba(0,0,0,0.1)',
+  hintColor: 'rgba(255,255,255,0.5)',
+  placeholderColor: '#aaa'
+}
+
+const lightTheme = {
+  background: 'linear-gradient(135deg, #e8f4fc 0%, #d4e8f2 50%, #c9dff0 100%)',
+  timeColor: '#1a1a2e',
+  dateColor: 'rgba(0,0,0,0.5)',
+  logoBtnActive: 'rgba(0,0,0,0.08)',
+  searchBox: 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.8) 100%)',
+  searchBoxFocused: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 100%)',
+  searchBoxShadow: '0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)',
+  searchBoxShadowFocused: '0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1)',
+  iconColor: '#666',
+  inputColor: '#333',
+  dividerColor: 'rgba(0,0,0,0.1)',
+  hintColor: 'rgba(0,0,0,0.4)',
+  placeholderColor: '#999'
+}
+
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 50%, #1a1a2e 100%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     paddingTop: '10vh',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
+    transition: 'background 0.5s ease'
+  },
+  themeToggle: {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    width: '44px',
+    height: '44px',
+    borderRadius: '50%',
+    border: 'none',
+    background: 'rgba(128,128,128,0.15)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.3s ease',
+    backdropFilter: 'blur(10px)'
   },
   timeContainer: {
     textAlign: 'center',
@@ -149,16 +214,16 @@ const styles = {
   time: {
     fontSize: '48px',
     fontWeight: '200',
-    color: '#fff',
     letterSpacing: '-1px',
-    textShadow: '0 2px 15px rgba(0,0,0,0.3)'
+    textShadow: '0 2px 15px rgba(0,0,0,0.1)',
+    transition: 'color 0.5s ease'
   },
   date: {
     fontSize: '14px',
     fontWeight: '300',
-    color: 'rgba(255,255,255,0.6)',
     marginTop: '6px',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.5px',
+    transition: 'color 0.5s ease'
   },
   logoSwitch: {
     display: 'flex',
@@ -200,14 +265,12 @@ const styles = {
     border: 'none',
     outline: 'none',
     background: 'transparent',
-    color: '#333',
     fontWeight: '400',
     letterSpacing: '0.2px'
   },
   divider: {
     width: '1px',
     height: '28px',
-    background: 'rgba(0,0,0,0.1)',
     marginRight: '6px'
   },
   searchBtn: {
@@ -225,9 +288,9 @@ const styles = {
   },
   hint: {
     marginTop: '20px',
-    color: 'rgba(255,255,255,0.5)',
     fontSize: '13px',
     fontWeight: '300',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.5px',
+    transition: 'color 0.5s ease'
   }
 }
