@@ -1,6 +1,9 @@
 export const metadata = {
-  title: 'Spotlight 搜索',
+  title: 'NewTab',
   description: 'macOS 风格搜索页',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({ children }) {
