@@ -6,7 +6,7 @@ export default function Home() {
   const [engine, setEngine] = useState('google')
   const [isFocused, setIsFocused] = useState(false)
   const [time, setTime] = useState(new Date())
-  const [isDark, setIsDark] = useState(true)
+  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000)
